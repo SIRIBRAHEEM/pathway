@@ -42,7 +42,7 @@ Mode chosen: single file. In the browser that is the OPFS store, which is Relate
 
 - Relate by Neo4j (`@relate/relate-wasm` 1.3.0 in the browser, `@relate/relate` 1.3.0 in Node for the seed script), Cypher 25
 - React and Vite for the app
-- Plain CSS written from scratch: blueprint graph paper, ink navy with amber and teal accents, Archivo headings, Public Sans body, IBM Plex Mono for course codes, all self-hosted so it works offline
+- Tailwind CSS with a small shadcn-style design system built for this project (buttons, badges, inputs, tabs, progress, empty states) and Lucide icons: ink navy with amber and teal accents on a blueprint graph canvas, Archivo headings, Public Sans body, IBM Plex Mono for course codes, all self-hosted so it works offline
 - SVG graph canvas with a layered layout computed in pure functions
 - Core logic (layout, study ordering, validation, progress) as pure functions with 16 unit tests, plus 19 Playwright end to end checks against the production build, zero console errors
 

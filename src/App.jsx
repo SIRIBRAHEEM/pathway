@@ -1,4 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  BookOpen,
+  Check,
+  CircleCheck,
+  Compass,
+  Database,
+  GraduationCap,
+  Link2,
+  ListChecks,
+  MousePointerClick,
+  Plus,
+  RefreshCcw,
+  RotateCcw,
+  Route,
+  Search,
+  Tag,
+  Terminal,
+  Trash2,
+  Users,
+  Waypoints,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
 import { run, resetGraph, lastQuery } from './relateClient.js';
 import {
   ENGINE_VERSION,
@@ -25,9 +49,21 @@ import {
   validateCourseInput,
   normaliseCode,
 } from './logic.js';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Field,
+  Input,
+  Progress,
+  SectionLabel,
+  Select,
+  StatChip,
+  Textarea,
+} from './components/ui.jsx';
 
-const NODE_W = 150;
-const NODE_H = 56;
+const NODE_W = 162;
+const NODE_H = 58;
 
 function levelColour(level) {
   return { 100: '#0e7c86', 200: '#2f6db3', 300: '#7a4fa3', 400: '#c2571b' }[level] || '#44506b';
@@ -217,14 +253,21 @@ export default function App() {
   if (status === 'loading') {
     return (
       <div className="boot">
+        <span className="brand-mark" aria-hidden="true">
+          <Waypoints size={22} strokeWidth={2.1} />
+        </span>
         <h1>Pathway</h1>
         <p>Starting the Relate graph engine in your browser...</p>
+        <div className="spinner" aria-hidden="true" />
       </div>
     );
   }
   if (status === 'error') {
     return (
       <div className="boot">
+        <span className="brand-mark" aria-hidden="true">
+          <Waypoints size={22} strokeWidth={2.1} />
+        </span>
         <h1>Pathway</h1>
         <p>The graph engine could not start: {errorText}</p>
         <p>Try a recent Chrome or Edge browser, which supports WebAssembly workers and OPFS storage.</p>
@@ -237,12 +280,7 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true">
-            <svg width="34" height="34" viewBox="0 0 34 34">
-              <circle cx="8" cy="26" r="4.5" fill="#0e7c86" />
-              <circle cx="17" cy="17" r="4.5" fill="#2f6db3" />
-              <circle cx="26" cy="8" r="4.5" fill="#f59e0b" />
-              <path d="M11 23 L14 20 M20 14 L23 11" stroke="#1b2a4a" strokeWidth="2.4" strokeLinecap="round" />
-            </svg>
+            <Waypoints size={22} strokeWidth={2.1} />
           </span>
           <div>
             <h1>Pathway</h1>
@@ -252,13 +290,14 @@ export default function App() {
         <div className="topbar-stats">
           {stats && (
             <>
-              <span><strong>{stats.courses}</strong> courses</span>
-              <span><strong>{stats.links}</strong> prerequisite links</span>
-              <span><strong>{stats.topics}</strong> topics</span>
-              <span><strong>{stats.lecturers}</strong> lecturers</span>
+              <StatChip value={stats.courses} label="courses" />
+              <StatChip value={stats.links} label="prerequisite links" />
+              <StatChip value={stats.topics} label="topics" />
+              <StatChip value={stats.lecturers} label="lecturers" />
             </>
           )}
           <span className="engine-badge" title="Embedded graph database running in this tab">
+            <span className="dot" aria-hidden="true" />
             Relate {engineVersion} in browser
           </span>
         </div>
@@ -273,55 +312,56 @@ export default function App() {
 
       {notice && (
         <div className="notice" role="status">
-          {notice}
-          <button className="notice-close" onClick={() => setNotice('')} aria-label="Dismiss">x</button>
+          <CircleCheck size={17} strokeWidth={2} className="flex-none text-accent-strong" />
+          <span>{notice}</span>
+          <button className="notice-x" onClick={() => setNotice('')} aria-label="Dismiss">
+            <X size={15} strokeWidth={2.2} />
+          </button>
         </div>
       )}
 
       <main className="layout">
         <aside className="panel left">
-          <h2>Find a course</h2>
-          <label className="field">
-            <span>Search by code, title or keyword</span>
-            <input
+          <SectionLabel icon={Search}>Find a course</SectionLabel>
+          <Field label="Search by code, title or keyword">
+            <Input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Try: CPT401, networks, SQL"
             />
-          </label>
-          <label className="field">
-            <span>Level</span>
-            <select value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)}>
+          </Field>
+          <Field label="Level">
+            <Select value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)}>
               <option value="">All levels</option>
               {LEVELS.map((l) => (
                 <option key={l} value={l}>{l} level</option>
               ))}
-            </select>
-          </label>
+            </Select>
+          </Field>
 
+          <SectionLabel icon={GraduationCap}>Your progress</SectionLabel>
           <div className="progress-box">
-            <h3>Your progress</h3>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${progress.percent}%` }} />
-            </div>
-            <p>
+            <Progress percent={progress.percent} />
+            <p className="mb-0 mt-2 text-[0.88rem] font-medium">
               {progress.doneCourses} of {progress.totalCourses} courses, {progress.doneUnits} of{' '}
               {progress.totalUnits} units ({progress.percent}%)
             </p>
             <ul className="progress-levels">
               {progress.byLevel.map((row) => (
                 <li key={row.level}>
-                  <span>{row.level} level</span>
+                  <span className="text-muted-foreground">{row.level} level</span>
                   <strong>{row.done}/{row.total}</strong>
                 </li>
               ))}
             </ul>
           </div>
 
-          <h3>Ready to take next</h3>
+          <SectionLabel icon={Compass}>Ready to take next</SectionLabel>
           {nextUp.length === 0 ? (
-            <p className="muted">Nothing is unlocked right now. Mark a foundation course as completed.</p>
+            <EmptyState icon={Compass}>
+              Nothing is unlocked right now. Mark a foundation course as completed.
+            </EmptyState>
           ) : (
             <ul className="chip-list">
               {nextUp.slice(0, 8).map((c) => (
@@ -334,7 +374,7 @@ export default function App() {
             </ul>
           )}
 
-          <h3>Browse by topic</h3>
+          <SectionLabel icon={Tag}>Browse by topic</SectionLabel>
           <ul className="chip-list">
             {topics.slice(0, 12).map((t) => (
               <li key={t.name}>
@@ -348,9 +388,9 @@ export default function App() {
             ))}
           </ul>
           {topicCourses && (
-            <div className="topic-results">
+            <div>
               <h4>Courses covering {topicCourses.topic}</h4>
-              <ul>
+              <ul className="m-0 list-none space-y-1 p-0">
                 {topicCourses.rows.map((r) => (
                   <li key={r.code}>
                     <button className="linklike" onClick={() => selectCourse(r.code)}>
@@ -362,34 +402,50 @@ export default function App() {
             </div>
           )}
 
-          <h3>All courses ({visible.length})</h3>
-          <ul className="course-list">
-            {visible.map((c) => (
-              <li key={c.code}>
-                <button
-                  className={`course-row ${selected === c.code ? 'course-row-on' : ''}`}
-                  onClick={() => selectCourse(c.code)}
-                >
-                  <span className="course-code" style={{ color: levelColour(c.level) }}>{c.code}</span>
-                  <span className="course-title">{c.title}</span>
-                  {c.completed && <span className="done-tag">done</span>}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <SectionLabel icon={BookOpen}>All courses ({visible.length})</SectionLabel>
+          {visible.length === 0 ? (
+            <EmptyState icon={Search}>
+              No course matches that search. Try a code like CPT401 or a keyword like networks.
+            </EmptyState>
+          ) : (
+            <ul className="course-list">
+              {visible.map((c) => (
+                <li key={c.code}>
+                  <button
+                    className={`course-row ${selected === c.code ? 'course-row-on' : ''}`}
+                    onClick={() => selectCourse(c.code)}
+                  >
+                    <span className="course-code" style={{ color: levelColour(c.level) }}>{c.code}</span>
+                    <span className="course-title">{c.title}</span>
+                    {c.completed && (
+                      <Badge tone="done" className="done-tag">
+                        <Check size={11} strokeWidth={3} /> done
+                      </Badge>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </aside>
 
         <section className="panel canvas-panel">
           <div className="canvas-head">
-            <h2>Course graph</h2>
+            <h2 className="mb-0">Course graph</h2>
             <div className="canvas-tools">
-              <button onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.1).toFixed(2)))}>Zoom out</button>
-              <span>{Math.round(zoom * 100)}%</span>
-              <button onClick={() => setZoom((z) => Math.min(1.6, +(z + 0.1).toFixed(2)))}>Zoom in</button>
-              <button onClick={() => setZoom(1)}>Reset view</button>
+              <Button size="sm" className="icon-only" aria-label="Zoom out" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.1).toFixed(2)))}>
+                <ZoomOut size={15} strokeWidth={2.1} />
+              </Button>
+              <span className="min-w-[44px] text-center">{Math.round(zoom * 100)}%</span>
+              <Button size="sm" className="icon-only" aria-label="Zoom in" onClick={() => setZoom((z) => Math.min(1.6, +(z + 0.1).toFixed(2)))}>
+                <ZoomIn size={15} strokeWidth={2.1} />
+              </Button>
+              <Button size="sm" onClick={() => setZoom(1)}>
+                <RotateCcw size={14} strokeWidth={2.1} /> Reset view
+              </Button>
             </div>
           </div>
-          <p className="muted small">
+          <p className="small mb-3">
             Columns are levels, 100 on the left to 400 on the right. An arrow points from a course
             to a prerequisite it needs. Click any course to inspect it.
           </p>
@@ -403,10 +459,10 @@ export default function App() {
             >
               <defs>
                 <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M0,0 L8,3 L0,6 z" fill="#8a94a6" />
+                  <path d="M0,0 L8,3 L0,6 z" fill="#94a3b8" />
                 </marker>
                 <marker id="arrow-hot" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M0,0 L8,3 L0,6 z" fill="#f59e0b" />
+                  <path d="M0,0 L8,3 L0,6 z" fill="#d97706" />
                 </marker>
               </defs>
               {requires.map(([a, b]) => {
@@ -425,7 +481,7 @@ export default function App() {
                     key={`${a}-${b}`}
                     d={`M ${x1} ${y1 + NODE_H / 2} C ${midX} ${y1 + NODE_H / 2}, ${midX} ${y2}, ${x2 + 4} ${y2}`}
                     fill="none"
-                    stroke={hot ? '#f59e0b' : '#b9c2d0'}
+                    stroke={hot ? '#d97706' : '#c3cedd'}
                     strokeWidth={hot ? 3 : 1.6}
                     opacity={dim ? 0.25 : 1}
                     markerEnd={hot ? 'url(#arrow-hot)' : 'url(#arrow)'}
@@ -450,20 +506,22 @@ export default function App() {
                     <rect
                       width={NODE_W}
                       height={NODE_H}
-                      rx="10"
+                      rx="11"
                       className="node-box"
                       style={{
-                        stroke: isSel ? '#f59e0b' : onChain ? '#f59e0b' : levelColour(c.level),
-                        strokeWidth: isSel ? 3 : onChain ? 2.4 : 1.6,
-                        fill: c.completed ? '#e7f4ec' : inFull ? '#fff4e0' : '#ffffff',
+                        stroke: isSel ? '#d97706' : onChain ? '#d97706' : levelColour(c.level),
+                        strokeWidth: isSel ? 2.8 : onChain ? 2.2 : 1.5,
+                        fill: c.completed ? '#e6f4ec' : inFull ? '#fdf0dc' : '#ffffff',
+                        filter: 'drop-shadow(0 1px 3px rgba(22,35,61,0.12))',
                       }}
                     />
-                    <text x="10" y="22" className="node-code" fill={levelColour(c.level)}>
+                    <rect x="0" y="8" width="5" height={NODE_H - 16} rx="2.5" fill={levelColour(c.level)} />
+                    <text x="14" y="24" className="node-code" fill={levelColour(c.level)}>
                       {c.code}
                       {c.completed ? '  ✓' : ''}
                     </text>
-                    <text x="10" y="42" className="node-title">
-                      {c.title.length > 24 ? `${c.title.slice(0, 23)}...` : c.title}
+                    <text x="14" y="44" className="node-title">
+                      {c.title.length > 26 ? `${c.title.slice(0, 25)}...` : c.title}
                     </text>
                   </g>
                 );
@@ -483,23 +541,31 @@ export default function App() {
             </svg>
           </div>
           <div className="legend">
-            <span><i className="swatch" style={{ background: '#e7f4ec', borderColor: '#3d9970' }} /> completed</span>
-            <span><i className="swatch" style={{ background: '#fff4e0', borderColor: '#f59e0b' }} /> needed before selected</span>
-            <span><i className="swatch" style={{ background: '#ffffff', borderColor: '#f59e0b' }} /> shortest chain highlighted</span>
+            <span><i className="swatch" style={{ background: '#e6f4ec', borderColor: '#1f7a4d' }} /> completed</span>
+            <span><i className="swatch" style={{ background: '#fdf0dc', borderColor: '#d97706' }} /> needed before selected</span>
+            <span><i className="swatch" style={{ background: '#ffffff', borderColor: '#d97706' }} /> shortest chain highlighted</span>
           </div>
         </section>
 
         <aside className="panel right">
           <div className="tabs" role="tablist">
-            <button className={tab === 'detail' ? 'tab-on' : ''} onClick={() => setTab('detail')}>Course</button>
-            <button className={tab === 'path' ? 'tab-on' : ''} onClick={() => setTab('path')}>Path finder</button>
-            <button className={tab === 'add' ? 'tab-on' : ''} onClick={() => setTab('add')}>Add course</button>
+            <button className={tab === 'detail' ? 'tab-on' : ''} onClick={() => setTab('detail')}>
+              <BookOpen size={15} strokeWidth={2.1} /> Course
+            </button>
+            <button className={tab === 'path' ? 'tab-on' : ''} onClick={() => setTab('path')}>
+              <Route size={15} strokeWidth={2.1} /> Path finder
+            </button>
+            <button className={tab === 'add' ? 'tab-on' : ''} onClick={() => setTab('add')}>
+              <Plus size={15} strokeWidth={2.1} /> Add course
+            </button>
           </div>
 
           {tab === 'detail' && (
             <div>
               {!detail ? (
-                <p className="muted">Select a course on the graph or in the list to see its prerequisites, topics and lecturer.</p>
+                <EmptyState icon={MousePointerClick}>
+                  Select a course on the graph or in the list to see its prerequisites, topics and lecturer.
+                </EmptyState>
               ) : (
                 <>
                   <h2>
@@ -509,12 +575,16 @@ export default function App() {
                   <p className="meta-line">
                     {detail.level} level, semester {detail.semester}, {detail.units} units
                   </p>
-                  <p>{detail.summary}</p>
-                  <button className="primary" onClick={() => toggleCompleted(detail)}>
-                    {detail.completed ? 'Mark as not completed' : 'Mark as completed'}
-                  </button>
+                  <p className="leading-relaxed">{detail.summary}</p>
+                  <Button variant="primary" block onClick={() => toggleCompleted(detail)}>
+                    {detail.completed ? (
+                      <><RotateCcw size={16} strokeWidth={2.1} /> Mark as not completed</>
+                    ) : (
+                      <><Check size={16} strokeWidth={2.4} /> Mark as completed</>
+                    )}
+                  </Button>
 
-                  <h3>Direct prerequisites</h3>
+                  <SectionLabel icon={Link2}>Direct prerequisites</SectionLabel>
                   {detail.prerequisites.filter(Boolean).length ? (
                     <ul className="chip-list">
                       {detail.prerequisites.filter(Boolean).map((code) => (
@@ -524,11 +594,11 @@ export default function App() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="muted">None. This is a foundation course.</p>
+                    <p className="muted text-[0.9rem]">None. This is a foundation course.</p>
                   )}
 
-                  <h3>Everything needed before it ({fullSet.length})</h3>
-                  <p className="small">
+                  <SectionLabel icon={ListChecks}>Everything needed before it ({fullSet.length})</SectionLabel>
+                  <p className="small mt-0">
                     Found by traversing REQUIRES edges in Relate. Amber nodes on the graph are in this set.
                   </p>
                   <ul className="chip-list">
@@ -539,10 +609,10 @@ export default function App() {
                     ))}
                   </ul>
 
-                  <h3>Shortest chain to a foundation</h3>
+                  <SectionLabel icon={Route}>Shortest chain to a foundation</SectionLabel>
                   <p className="chain-line">{chain.length ? chain.join('  ->  ') : 'Not computed yet.'}</p>
 
-                  <h3>Unlocks</h3>
+                  <SectionLabel icon={Compass}>Unlocks</SectionLabel>
                   {detail.unlocks.filter(Boolean).length ? (
                     <ul className="chip-list">
                       {detail.unlocks.filter(Boolean).map((code) => (
@@ -552,10 +622,10 @@ export default function App() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="muted">No course lists this one as a prerequisite.</p>
+                    <p className="muted text-[0.9rem]">No course lists this one as a prerequisite.</p>
                   )}
 
-                  <h3>Topics covered</h3>
+                  <SectionLabel icon={Tag}>Topics covered</SectionLabel>
                   <ul className="chip-list">
                     {detail.topics.filter(Boolean).map((t) => (
                       <li key={t}>
@@ -564,12 +634,12 @@ export default function App() {
                     ))}
                   </ul>
 
-                  <h3>Lecturer</h3>
-                  <p>{detail.lecturers.filter(Boolean).join(', ') || 'Not assigned in sample data.'}</p>
+                  <SectionLabel icon={Users}>Lecturer</SectionLabel>
+                  <p className="mt-0">{detail.lecturers.filter(Boolean).join(', ') || 'Not assigned in sample data.'}</p>
 
-                  <button className="danger" onClick={() => removeCourse(detail.code)}>
-                    Remove {detail.code} from the graph
-                  </button>
+                  <Button variant="danger" block className="mt-5" onClick={() => removeCourse(detail.code)}>
+                    <Trash2 size={15} strokeWidth={2.1} /> Remove {detail.code} from the graph
+                  </Button>
                 </>
               )}
             </div>
@@ -578,28 +648,27 @@ export default function App() {
           {tab === 'path' && (
             <div>
               <h2>Path finder</h2>
-              <p>
+              <p className="leading-relaxed">
                 Pick a target course. Pathway asks Relate for every course reachable through
                 prerequisite edges, then orders them into a study sequence you can actually follow.
               </p>
-              <label className="field">
-                <span>Target course</span>
-                <select value={pathTarget} onChange={(e) => setPathTarget(e.target.value)}>
+              <Field label="Target course">
+                <Select value={pathTarget} onChange={(e) => setPathTarget(e.target.value)}>
                   <option value="">Choose a course...</option>
                   {courses.map((c) => (
                     <option key={c.code} value={c.code}>
                       {c.code} - {c.title}
                     </option>
                   ))}
-                </select>
-              </label>
-              <button className="primary" onClick={buildPath} disabled={!pathTarget}>
-                Build my study path
-              </button>
-              {pathPlan && (
+                </Select>
+              </Field>
+              <Button variant="primary" block onClick={buildPath} disabled={!pathTarget}>
+                <Route size={16} strokeWidth={2.1} /> Build my study path
+              </Button>
+              {pathPlan ? (
                 <div className="path-result">
-                  <h3>Study sequence for {pathPlan.target}</h3>
-                  <p className="small">
+                  <SectionLabel icon={ListChecks}>Study sequence for {pathPlan.target}</SectionLabel>
+                  <p className="small mt-0">
                     {pathPlan.order.length} courses, in an order where every prerequisite comes first.
                     {pathPlan.hasCycle ? ' Warning: a cycle was detected in the data.' : ''}
                   </p>
@@ -617,8 +686,14 @@ export default function App() {
                       </li>
                     ))}
                   </ol>
-                  <h3>Shortest chain</h3>
+                  <SectionLabel icon={Route}>Shortest chain</SectionLabel>
                   <p className="chain-line">{pathPlan.chain.join('  ->  ')}</p>
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <EmptyState icon={Route}>
+                    Choose a target course above and Pathway will build the full study sequence from the graph.
+                  </EmptyState>
                 </div>
               )}
             </div>
@@ -627,7 +702,7 @@ export default function App() {
           {tab === 'add' && (
             <form onSubmit={submitCourse}>
               <h2>Add your own course</h2>
-              <p className="small">
+              <p className="small mt-0">
                 It is written into the Relate graph and saved in the persistent store, so it is
                 still here after a reload.
               </p>
@@ -638,61 +713,54 @@ export default function App() {
                   ))}
                 </ul>
               )}
-              <label className="field">
-                <span>Course code</span>
-                <input
+              <Field label="Course code">
+                <Input
                   value={form.code}
                   onChange={(e) => setForm({ ...form, code: e.target.value })}
                   placeholder="CPT309"
                 />
-              </label>
-              <label className="field">
-                <span>Title</span>
-                <input
+              </Field>
+              <Field label="Title">
+                <Input
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="Web Development"
                 />
-              </label>
+              </Field>
               <div className="field-row">
-                <label className="field">
-                  <span>Level</span>
-                  <select value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })}>
+                <Field label="Level">
+                  <Select value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })}>
                     {LEVELS.map((l) => (
                       <option key={l} value={l}>{l}</option>
                     ))}
-                  </select>
-                </label>
-                <label className="field">
-                  <span>Semester</span>
-                  <select value={form.semester} onChange={(e) => setForm({ ...form, semester: e.target.value })}>
+                  </Select>
+                </Field>
+                <Field label="Semester">
+                  <Select value={form.semester} onChange={(e) => setForm({ ...form, semester: e.target.value })}>
                     <option value={1}>1</option>
                     <option value={2}>2</option>
-                  </select>
-                </label>
-                <label className="field">
-                  <span>Units</span>
-                  <input
+                  </Select>
+                </Field>
+                <Field label="Units">
+                  <Input
                     type="number"
                     min="1"
                     max="6"
                     value={form.units}
                     onChange={(e) => setForm({ ...form, units: e.target.value })}
                   />
-                </label>
+                </Field>
               </div>
-              <label className="field">
-                <span>Short summary</span>
-                <textarea
+              <Field label="Short summary">
+                <Textarea
                   rows="2"
                   value={form.summary}
                   onChange={(e) => setForm({ ...form, summary: e.target.value })}
                   placeholder="What will students learn?"
                 />
-              </label>
-              <label className="field">
-                <span>Prerequisites (hold Ctrl or Cmd for several)</span>
-                <select
+              </Field>
+              <Field label="Prerequisites (hold Ctrl or Cmd for several)">
+                <Select
                   multiple
                   size="6"
                   value={form.prerequisites}
@@ -705,22 +773,28 @@ export default function App() {
                       {c.code} - {c.title}
                     </option>
                   ))}
-                </select>
-              </label>
-              <button className="primary" type="submit">Add to graph</button>
+                </Select>
+              </Field>
+              <Button variant="primary" block type="submit">
+                <Plus size={16} strokeWidth={2.2} /> Add to graph
+              </Button>
             </form>
           )}
 
           <div className="reset-box">
-            <h3>Sample data</h3>
-            <p className="small">Restore the original sample course map. This clears your changes in the store.</p>
-            <button onClick={doReset}>Reset sample graph</button>
+            <SectionLabel icon={Database}>Sample data</SectionLabel>
+            <p className="small mt-0">Restore the original sample course map. This clears your changes in the store.</p>
+            <Button onClick={doReset}>
+              <RefreshCcw size={15} strokeWidth={2.1} /> Reset sample graph
+            </Button>
           </div>
         </aside>
       </main>
 
       <footer className="hood">
-        <h2>Under the hood</h2>
+        <h2>
+          <Terminal size={19} strokeWidth={2.1} /> Under the hood
+        </h2>
         <p>
           The graph lives in <strong>Relate {engineVersion}</strong>, an embedded graph database
           (Neo4j Labs) compiled to WebAssembly and running in a Web Worker in this tab.
@@ -728,10 +802,10 @@ export default function App() {
           Every screen above is driven by Cypher queries against that store. The most recent one:
         </p>
         <pre className="cypher-box">{queryInfo.statement || 'No query yet.'}</pre>
-        <p className="small">
-          Engine time: {queryInfo.elapsedMs == null ? 'n/a' : `${queryInfo.elapsedMs} ms`}.
-          No server, no account, works offline after first load.
-        </p>
+        <div className="hood-meta">
+          <span>Engine time: {queryInfo.elapsedMs == null ? 'n/a' : `${queryInfo.elapsedMs} ms`}</span>
+          <span>No server, no account, works offline after first load.</span>
+        </div>
       </footer>
     </div>
   );

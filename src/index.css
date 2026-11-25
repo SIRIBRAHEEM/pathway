@@ -1,0 +1,271 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pathway design system (shadcn-style).
+   Tokens live in tailwind.config.js. Components are defined once here
+   with @apply and reused across every screen: button, card, badge,
+   input, select, tabs, progress, stat, empty state, graph node.
+   Icons: Lucide. Type: Archivo display, Public Sans body,
+   IBM Plex Mono for course codes (all self-hosted in public/fonts).
+   Anti-slop rules followed: no decorative gradients, no glass panels,
+   one accent colour, real borders and shadows, no emoji icons. */
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid rgba(27, 42, 74, 0.4); outline-offset: 2px; }
+  ::selection { background: #fde9c8; }
+}
+
+@layer components {
+  /* ---------- App shell ---------- */
+  .app { @apply mx-auto w-full max-w-[1560px] px-4 pb-10 pt-4 sm:px-5; }
+
+  .topbar {
+    @apply sticky top-3 z-20 flex flex-wrap items-center gap-x-5 gap-y-3
+      rounded-card border border-border bg-card px-5 py-3.5 shadow-md;
+  }
+  .brand { @apply flex items-center gap-3; }
+  .brand-mark {
+    @apply grid h-11 w-11 flex-none place-items-center rounded-xl bg-primary text-white shadow-md;
+  }
+  .brand h1 { @apply text-[1.4rem] font-extrabold leading-none; }
+  .brand p { @apply mt-1 text-[0.8rem] font-medium text-muted-foreground; }
+
+  .topbar-stats { @apply ml-auto flex flex-wrap items-center gap-2; }
+  .stat-chip {
+    @apply inline-flex items-baseline gap-1.5 rounded-full border border-border bg-muted
+      px-3 py-[5px] text-[0.8rem] font-medium text-muted-foreground;
+  }
+  .stat-chip strong { @apply font-display text-[0.95rem] font-bold text-foreground; }
+  .engine-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-[6px]
+      text-[0.78rem] font-semibold text-white;
+  }
+  .engine-badge .dot { @apply h-[7px] w-[7px] rounded-full bg-emerald-400; }
+
+  .intro {
+    @apply mt-4 max-w-[1020px] text-[0.98rem] leading-relaxed text-muted-foreground;
+  }
+  .intro em { @apply font-semibold not-italic text-foreground; }
+
+  /* ---------- Notice ---------- */
+  .notice {
+    @apply mt-4 flex items-center gap-2.5 rounded-control border border-accent-border
+      bg-accent-soft px-3.5 py-[11px] text-[0.92rem] leading-relaxed;
+    animation: rise 0.25s ease;
+  }
+  .notice-x {
+    @apply ml-auto grid flex-none cursor-pointer place-items-center rounded-md border-0
+      bg-transparent p-1 text-muted-foreground hover:bg-accent/10 hover:text-foreground;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout {
+    @apply mt-4 grid items-start gap-4;
+    grid-template-columns: 302px minmax(0, 1fr) 348px;
+  }
+  @media (max-width: 1220px) {
+    .layout { grid-template-columns: 280px minmax(0, 1fr); }
+    .panel.right { grid-column: 1 / -1; }
+  }
+  @media (max-width: 820px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .panel {
+    @apply rounded-card border border-border bg-card p-5 shadow-sm;
+    animation: rise 0.3s ease;
+  }
+  .panel h2 { @apply mb-2.5 text-[1.12rem] font-bold; }
+  .panel h3 { @apply mb-2 mt-5 text-[0.92rem] font-bold; }
+  .panel h4 { @apply mb-1.5 mt-3 text-[0.86rem] font-bold; }
+  .section-label {
+    @apply mb-2 mt-5 flex items-center gap-1.5 text-[0.72rem] font-bold uppercase
+      tracking-[0.1em] text-muted-foreground;
+  }
+  .section-label:first-child { @apply mt-0; }
+
+  /* ---------- Buttons (shadcn-style) ---------- */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-control
+      border border-border-strong bg-card px-3.5 py-2 text-[0.9rem] font-semibold
+      text-foreground shadow-sm transition-all duration-150 hover:bg-muted active:translate-y-px;
+  }
+  .btn.primary { @apply border-primary bg-primary text-white hover:border-primary-hover hover:bg-primary-hover; }
+  .btn.primary:disabled { @apply cursor-not-allowed border-border bg-muted text-muted-foreground shadow-none; }
+  .btn.btn-full { @apply w-full py-2.5; }
+  .btn.danger { @apply border-danger-border text-danger hover:bg-danger-soft; }
+  .btn.icon-only { @apply px-2.5 py-2; }
+  .btn.sm { @apply px-2.5 py-[6px] text-[0.82rem]; }
+
+  /* ---------- Form controls ---------- */
+  .field { @apply mb-3 block; }
+  .field > span { @apply mb-1.5 block text-[0.82rem] font-semibold text-muted-foreground; }
+  .input, .select, .textarea {
+    @apply w-full rounded-control border border-border-strong bg-card px-3 py-2
+      text-[0.92rem] text-foreground shadow-sm transition-colors duration-150
+      placeholder:text-muted-foreground/70 hover:border-muted-foreground/50
+      focus:border-primary focus:outline-none;
+  }
+  .select { @apply cursor-pointer; }
+  .field-row { @apply grid grid-cols-3 gap-2.5; }
+  .form-errors {
+    @apply mb-3 list-disc rounded-control border border-danger-border bg-danger-soft
+      py-2.5 pl-8 pr-3 text-[0.86rem] text-danger;
+  }
+
+  /* ---------- Badges and chips ---------- */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-[0.72rem] font-bold;
+  }
+  .badge.done { @apply bg-success-soft text-success; }
+  .chip-list { @apply m-0 flex list-none flex-wrap gap-1.5 p-0; }
+  .chip {
+    @apply inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-border-strong
+      bg-card px-2.5 py-[5px] font-mono text-[0.8rem] font-semibold text-foreground
+      shadow-sm transition-all duration-150 hover:border-primary hover:bg-primary-soft;
+  }
+  .chip span { @apply font-body text-[0.74rem] font-normal text-muted-foreground; }
+  .chip-on { @apply border-primary bg-primary text-white hover:bg-primary-hover; }
+  .chip-on span { @apply text-inkdeep-soft; }
+
+  /* ---------- Progress ---------- */
+  .progress-box { @apply rounded-control border border-border bg-muted/60 p-3.5; }
+  .progress-track { @apply h-[9px] overflow-hidden rounded-full bg-border; }
+  .progress-fill {
+    @apply h-full rounded-full bg-teal transition-all duration-500;
+  }
+  .progress-levels {
+    @apply m-0 mt-2.5 grid list-none grid-cols-2 gap-x-3 gap-y-1 p-0 text-[0.82rem];
+  }
+  .progress-levels li { @apply flex items-center justify-between; }
+  .progress-levels strong { @apply font-display; }
+
+  /* ---------- Course list ---------- */
+  .course-list { @apply m-0 max-h-[430px] list-none overflow-y-auto p-0 pr-1; }
+  .course-row {
+    @apply flex w-full cursor-pointer items-center gap-2.5 rounded-control border border-transparent
+      bg-transparent px-2.5 py-2 text-left transition-colors duration-150 hover:bg-muted;
+  }
+  .course-row-on { @apply border-accent-border bg-accent-soft hover:bg-accent-soft; }
+  .course-code { @apply whitespace-nowrap font-mono text-[0.84rem] font-semibold; }
+  .course-title { @apply min-w-0 flex-1 truncate text-[0.86rem]; }
+  .course-row .done-tag { @apply ml-auto; }
+
+  /* ---------- Graph canvas ---------- */
+  .canvas-head { @apply mb-1 flex flex-wrap items-center justify-between gap-3; }
+  .canvas-tools { @apply flex items-center gap-1.5 text-[0.84rem] font-semibold text-muted-foreground; }
+  .canvas-wrap {
+    @apply max-h-[720px] overflow-auto rounded-control border border-border;
+    background:
+      linear-gradient(#edf0f5 1px, transparent 1px),
+      linear-gradient(90deg, #edf0f5 1px, transparent 1px),
+      #fbfcfe;
+    background-size: 24px 24px;
+  }
+  .node { cursor: pointer; }
+  .node .node-box { transition: stroke-width 0.15s ease, filter 0.15s ease; }
+  .node:hover .node-box { filter: brightness(0.985); }
+  .node-code { @apply font-mono text-[13px] font-semibold; }
+  .node-title { @apply font-body text-[10.5px]; fill: #5c6a82; }
+  .level-label {
+    @apply font-display text-[12.5px] font-bold;
+    letter-spacing: 0.1em;
+  }
+  .legend { @apply mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[0.8rem] text-muted-foreground; }
+  .swatch {
+    @apply mr-1.5 inline-block h-3.5 w-3.5 rounded border-2 align-[-2px];
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    @apply mb-4 grid grid-cols-3 gap-1 rounded-control border border-border bg-muted p-1;
+  }
+  .tabs button {
+    @apply inline-flex cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-[7px] border-0
+      bg-transparent px-1 py-2 text-[0.82rem] font-semibold text-muted-foreground
+      transition-all duration-150 hover:text-foreground;
+  }
+  .tabs button.tab-on { @apply bg-card text-foreground shadow-sm; }
+
+  /* ---------- Inspector ---------- */
+  .meta-line { @apply -mt-1 text-[0.88rem] text-muted-foreground; }
+  .chain-line {
+    @apply break-words rounded-control border border-border bg-muted/60 px-3 py-2
+      font-mono text-[0.82rem] leading-relaxed;
+  }
+  .path-list { @apply m-0 list-none p-0; counter-reset: pathstep; }
+  .path-list li {
+    @apply relative border-b border-border/70 py-2 pl-9 text-[0.9rem] leading-snug;
+    counter-increment: pathstep;
+  }
+  .path-list li::before {
+    content: counter(pathstep);
+    @apply absolute left-0 top-[7px] grid h-[24px] w-[24px] place-items-center rounded-full
+      bg-primary-soft font-display text-[0.74rem] font-bold text-primary;
+  }
+  .path-list li.path-target { @apply font-bold; }
+  .path-list li.path-target::before { @apply bg-accent text-white; }
+  .path-meta { @apply ml-1.5 text-[0.78rem] font-normal text-muted-foreground; }
+  .linklike {
+    @apply cursor-pointer border-0 bg-transparent p-0 font-mono font-semibold text-teal
+      underline decoration-teal/40 underline-offset-2 hover:decoration-teal;
+  }
+
+  /* ---------- Empty states ---------- */
+  .empty {
+    @apply flex flex-col items-center gap-2 rounded-control border border-dashed
+      border-border-strong bg-muted/40 px-4 py-6 text-center;
+  }
+  .empty-icon {
+    @apply grid h-10 w-10 place-items-center rounded-full bg-card text-muted-foreground shadow-sm;
+  }
+  .empty p { @apply m-0 max-w-[300px] text-[0.88rem] leading-relaxed text-muted-foreground; }
+
+  .reset-box { @apply mt-6 border-t border-border pt-1; }
+
+  .muted { @apply text-muted-foreground; }
+  .small { @apply text-[0.84rem] leading-relaxed text-muted-foreground; }
+
+  /* ---------- Under the hood ---------- */
+  .hood {
+    @apply mt-4 rounded-card bg-inkdeep p-5 text-slate-100 shadow-md sm:p-6;
+  }
+  .hood h2 { @apply mb-2 flex items-center gap-2 text-[1.12rem] font-bold text-white; }
+  .hood p { @apply max-w-[1020px] leading-relaxed text-inkdeep-soft; }
+  .hood strong { @apply text-amber-400; }
+  .cypher-box {
+    @apply overflow-x-auto whitespace-pre-wrap rounded-control border border-inkdeep-border
+      bg-[#0b1322] px-4 py-3 font-mono text-[0.84rem] leading-relaxed text-slate-200;
+  }
+  .hood-meta { @apply mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[0.84rem] text-inkdeep-soft; }
+
+  /* ---------- Boot screens ---------- */
+  .boot {
+    @apply mx-auto mt-[16vh] max-w-[540px] rounded-card border border-border bg-card
+      p-8 text-center shadow-md;
+    animation: rise 0.3s ease;
+  }
+  .boot .brand-mark { @apply mx-auto mb-4; }
+  .boot h1 { @apply text-[1.6rem] font-extrabold; }
+  .boot p { @apply leading-relaxed text-muted-foreground; }
+  .spinner {
+    @apply mx-auto mt-5 h-8 w-8 rounded-full border-[3px] border-border border-t-primary;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

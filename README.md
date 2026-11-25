@@ -80,6 +80,8 @@ This repository must carry the GitHub topic **relate** so the organisers can fin
 ## Project layout
 
 - `src/App.jsx` - the interface (graph canvas, detail panel, path finder, add course)
+- `src/components/ui.jsx` - small shadcn-style primitives (button, badge, input, select, progress, empty state) with Lucide icons
+- `src/index.css`, `tailwind.config.js` - the design system: Tailwind tokens built around ink navy, Archivo headings, Public Sans body, IBM Plex Mono for course codes, all self-hosted
 - `src/logic.js` - pure functions: layout, study ordering, validation, progress (unit tested)
 - `src/cypher.js` - every Cypher statement the app runs
 - `src/worker.js` - the Web Worker that owns the Relate store
